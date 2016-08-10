@@ -5,6 +5,7 @@ from gtts_token.gtts_token import Token
 import sys
 import argparse
 import os
+import string
 
 reload(sys)  
 sys.setdefaultencoding("utf-8")  
@@ -102,10 +103,11 @@ class gTTS:
         self.token = Token()
 
     def save(self, savefile):
-        """ Do the Web request and save to `savefile` """
-        with open((savefile+'.mp3').decode('utf-8'), 'wb') as f:
-            self.write_to_fp(f)
-            f.close()
+		""" Do the Web request and save to `savefile` """
+		with open((savefile+'.mp3').decode('utf-8'), 'wb') as f:
+			self.write_to_fp(f)
+			f.close()
+
 
     def write_to_fp(self, fp):
         """ Do the Web request and save to a file-like object """
@@ -170,7 +172,7 @@ text_group = parser.add_mutually_exclusive_group(required=True)
 text_group.add_argument('text', nargs='?', help="text to speak")      
 text_group.add_argument('-f', '--file', help="file to speak")
 
-parser.add_argument("-o", '--destination', help="destination mp3 file", action='store')
+#parser.add_argument("-o", '--destination', help="destination mp3 file", action='store')
 #parser.add_argument('-l', '--lang', default='en', help="ISO 639-1/IETF language tag to speak in:\n" + languages())
 parser.add_argument('--debug', default=False, action="store_true")
 
@@ -195,6 +197,7 @@ try:
     for sentences in line_text:
 		# TTSTF (Text to Speech to File)
 		sentences=sentences.strip('\n')
+		sentences = sentences.decode('utf-8','replace')
 		tts = gTTS(text=sentences, lang='zh-cn', debug=args.debug)
 		tts.save(sentences)
 
