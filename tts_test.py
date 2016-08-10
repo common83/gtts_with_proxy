@@ -103,7 +103,7 @@ class gTTS:
 
     def save(self, savefile):
         """ Do the Web request and save to `savefile` """
-        with open(savefile, 'wb') as f:
+        with open((savefile+'.mp3').decode('utf-8'), 'wb') as f:
             self.write_to_fp(f)
             f.close()
 
@@ -181,22 +181,27 @@ print args
 #file t_file = open('text.txt','r')
 #for line in file.xreadlines():
 #	tts = gTTS(text=line,lang='zh-cn',debug=debug)
-print sys.getdefaultencoding()
+#print sys.getdefaultencoding()
+line_text = []
+
 
 try:
     if args.text:
         text = args.text
     else:
         with open(args.file, "r") as f:
-            text = f.read()
+            line_text = f.readlines()
 
-    # TTSTF (Text to Speech to File)
-    tts = gTTS(text=text, lang='zh-cn', debug=args.debug)
+    for sentences in line_text:
+		# TTSTF (Text to Speech to File)
+		sentences=sentences.strip('\n')
+		tts = gTTS(text=sentences, lang='zh-cn', debug=args.debug)
+		tts.save(sentences)
 
-    if args.destination:
-        tts.save(args.destination)
-    else:
-        tts.write_to_fp(os.fdopen(sys.stdout.fileno(), "wb"))
+#    if args.destination:
+#        tts.save(args.destination)
+#    else:
+#        tts.write_to_fp(os.fdopen(sys.stdout.fileno(), "wb"))
 
 except Exception as e:
     if args.destination:
