@@ -75,8 +75,9 @@ class gTTS:
         'cy' : 'Welsh'
     }
 
-    def __init__(self, text, lang = 'en', debug = False):
+    def __init__(self, text, lang = 'en', debug = False, ttsspeed = 1):
         self.debug = debug
+
         if lang.lower() not in self.LANGUAGES:
             raise Exception('Language not supported: %s' % lang)
         else:
@@ -101,7 +102,9 @@ class gTTS:
         
         # Google Translate token
         self.token = Token()
-
+        #tts speed
+        self.ttsspeed = ttsspeed
+		
     def save(self, savefile):
 		""" Do the Web request and save to `savefile` """
 		with open((savefile+'.mp3').decode('utf-8'), 'wb') as f:
@@ -119,7 +122,8 @@ class gTTS:
                         'idx' : idx,
                         'client' : 'tw-ob',
                         'textlen' : len(part),
-                        'tk' : self.token.calculate_token(part)}
+                        'tk' : self.token.calculate_token(part),
+						'ttsspeed' : self.ttsspeed}
             headers = {
                 "Referer" : "http://translate.google.com/",
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36"
@@ -159,7 +163,6 @@ class gTTS:
         else:
             return [thestring]
 
-
 def languages():
     """Sorted pretty printed string of supported languages"""
     return ", ".join(sorted("{}: '{}'".format(gTTS.LANGUAGES[k], k) for k in gTTS.LANGUAGES))
@@ -172,21 +175,16 @@ text_group = parser.add_mutually_exclusive_group(required=True)
 text_group.add_argument('text', nargs='?', help="text to speak")      
 text_group.add_argument('-f', '--file', help="file to speak")
 
-#parser.add_argument("-o", '--destination', help="destination mp3 file", action='store')
-#parser.add_argument('-l', '--lang', default='en', help="ISO 639-1/IETF language tag to speak in:\n" + languages())
+parser.add_argument("-o", '--destination', help="destination mp3 file", action='store')
+parser.add_argument('-l', '--lang', default='zh-cn', help="ISO 639-1/IETF language tag to speak in:\n" + languages())
 parser.add_argument('--debug', default=False, action="store_true")
+parser.add_argument('--ttsspeed', default=1 ,required=False, help='specify the speed of tts voice,value scope: 0 ~1 ,default value is 1.')
 
 args = parser.parse_args()
 print args
 
 
-#file t_file = open('text.txt','r')
-#for line in file.xreadlines():
-#	tts = gTTS(text=line,lang='zh-cn',debug=debug)
-#print sys.getdefaultencoding()
 line_text = []
-
-
 try:
     if args.text:
         text = args.text
@@ -198,7 +196,7 @@ try:
 		# TTSTF (Text to Speech to File)
 		sentences=sentences.strip('\n')
 		sentences = sentences.decode('utf-8','replace')
-		tts = gTTS(text=sentences, lang='zh-cn', debug=args.debug)
+		tts = gTTS(text=sentences, lang=args.lang, debug=args.debug, ttsspeed=args.ttsspeed)
 		tts.save(sentences)
 
 #    if args.destination:
