@@ -19,3 +19,6 @@ Translation language, for example, ar for Arabic, or en-us for English
 
 ie
 Encoding format, use default UTF-8
+
+
+this code based on :gtts-token(1.0.0) requests(2.9.1)
